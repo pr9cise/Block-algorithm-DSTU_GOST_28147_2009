@@ -1,0 +1,197 @@
+import function
+def encryptionregular():
+    inputtext = input("Введіть текст:\n")
+    inputkey = input("Введіть ключ:\n")
+    inputkey = int(inputkey)
+    bintext = ""
+    fullkey = ""
+    resultbin = ""
+    hollow = ""
+    K8 = []
+    L = ""
+    R = ""
+    L1 = ""
+    R1 = ""
+    M = ""
+    #checking key for compatibility
+    if len(bin(inputkey)[2:]) < 256:
+        m = 256 - len(bin(inputkey)[2:])
+        n = ""
+        for i in range(m):
+            n += "0"
+        n += bin(inputkey)[2:]
+        fullkey = n
+    elif len(bin(inputkey)[2:]) == 256:
+        fullkey = bin(inputkey)[2:]
+    else:
+        m = len(bin(inputkey)[2:]) - 256
+        fullkey = bin(inputkey)[2 + m:]
+    print(fullkey)
+    for i in range (8):
+        k0 = ""
+        for j in range (32):
+            k0 += fullkey[i * 32 + j]
+        K8.append(k0)
+    print(K8)
+    #converting text from ascii to bin
+    for i in range (len(inputtext)):
+        binletter = bin(ord(inputtext[i]))[2:]
+        fullbinletter = ""
+        if len(binletter) < 8:
+            m = 8 - len(binletter)
+            n = ""
+            for j in range(m):
+                n += "0"
+            n += binletter
+            fullbinletter = n
+        else:
+            fullbinletter = binletter
+        bintext += fullbinletter
+    if len(bintext) % 64 != 0:
+        diff = 64 - (len(bintext) % 64)
+        bindiff = bin(int(diff / 8))[2:]
+        if len(bindiff) < 8:
+            m = 8 - len(bindiff)
+            n = ""
+            for j in range(m):
+                n += "0"
+            n += bindiff
+            bindiff = n
+        for i in range (int(diff / 8)):
+            bintext += bindiff
+    print(bintext)
+    amount = int(len(bintext) / 64)
+    textarr = []
+    for i in range (amount):
+        k0 = ""
+        for j in range (64):
+            k0 += bintext[i * 64 + j]
+        textarr.append(k0)
+    print(textarr)
+    #actual encryption
+    for i in range (amount):
+        partedtext = textarr[i]
+        finalbin = ""
+        print(f"partedtext = {partedtext}")
+        L = partedtext[:32]
+        R = partedtext[32:]
+        for j in range (8):
+            if j > 0:
+                R = bin(R)[2:]
+            if len(R) < 32:
+                m = 32 - len(R)
+                n = ""
+                for k in range(m):
+                    n += "0"
+                n += R
+                R = n
+            L1 = R
+            M = function.xorfunction(R, K8[j])
+            R1 = int(L, 2) ^ int(M, 2)
+            L = L1
+            R = R1
+        for j in range (8):
+            R = bin(R)[2:]
+            if len(R) < 32:
+                m = 32 - len(R)
+                n = ""
+                for k in range(m):
+                    n += "0"
+                n += R
+                R = n
+            L1 = R
+            M = function.xorfunction(R, K8[j])
+            R1 = int(L, 2) ^ int(M, 2)
+            L = L1
+            R = R1
+        for j in range (8):
+            R = bin(R)[2:]
+            if len(R) < 32:
+                m = 32 - len(R)
+                n = ""
+                for k in range(m):
+                    n += "0"
+                n += R
+                R = n
+            L1 = R
+            M = function.xorfunction(R, K8[j])
+            R1 = int(L, 2) ^ int(M, 2)
+            L = L1
+            R = R1
+        for j in range (7, 0 , -1):
+            R = bin(R)[2:]
+            if len(R) < 32:
+                m = 32 - len(R)
+                n = ""
+                for k in range(m):
+                    n += "0"
+                n += R
+                R = n
+            L1 = R
+            M = function.xorfunction(R, K8[j])
+            R1 = int(L, 2) ^ int(M, 2)
+            L = L1
+            R = R1
+        R = bin(R)[2:]
+        if len(R) < 32:
+            m = 32 - len(R)
+            n = ""
+            for j in range(m):
+                n += "0"
+            n += R
+            R = n
+        M = function.xorfunction(R, K8[0])
+        L = int(L, 2) ^ int(M, 2)
+        L = bin(L)[2:]
+        if len(L) < 32:
+            m = 32 - len(L)
+            n = ""
+            for j in range(m):
+                n += "0"
+            n += L
+            L = n
+        print(f"L = {L}\nR = {R}")
+        finalbin = L + R
+        print(f"finalbin = {finalbin}\n////////////////////////////////////////////////")
+        resultbin += finalbin
+    print(len(resultbin))
+    print(resultbin)
+    # converting text from binary to hex
+    amount = int(len(resultbin) / 8)
+    hexresulttext = ""
+    for i in range (amount):
+        binhex = ""
+        for j in range (8):
+            binhex += resultbin[i * 8 + j]
+        print(binhex)
+        hexoutputtext = hex(int(binhex, 2))[2:]
+        fullhex1 = ""
+        if len(hexoutputtext) < 2:
+            m = 2 - len(hexoutputtext)
+            n = ""
+            for i in range(m):
+                n += "0"
+            n += hexoutputtext
+            fullhex1 = n
+        else:
+            fullhex1 = hexoutputtext
+        print(fullhex1)
+        hexresulttext += fullhex1 + " "
+    print(hexresulttext)
+"""
+hexresulttext = ""
+hexoutputtext = hex(int(resultbin, 2))[2:]
+fullhex1 = ""
+if len(hexoutputtext) < 2:
+    m = 2 - len(hexoutputtext)
+    n = ""
+    for i in range(m):
+        n += "0"
+    n += hexoutputtext
+    fullhex1 = n
+else:
+    fullhex1 = hexoutputtext
+print(fullhex1)
+hexresulttext += fullhex1 + " "
+print("||||||||||||||||||||||||||||||||||||||||||||||||||||||||")
+"""
